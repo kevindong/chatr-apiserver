@@ -18,5 +18,8 @@
   "homepage": "https://github.com/CS307-Group5/chatr-apiserver#readme",
   "dependencies": {
     "express": "^4.14.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.15.0"
   }
 }
