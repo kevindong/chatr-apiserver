@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/CS307-Group5/chatr-apiserver#readme",
   "dependencies": {
+    "body-parser": "^1.16.1",
     "express": "^4.14.1"
   },
   "devDependencies": {
