@@ -3,7 +3,6 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(module.filename);
 const env = process.env.NODE_ENV || 'development';
-//const config = require(`${__dirname}/../config/config.json`)[env];
 const db = {};
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
@@ -16,11 +15,14 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
 
 fs
 	.readdirSync(__dirname)
-	.filter((file) =>
-		(file.indexOf('.') !== 0) &&
-		(file !== basename) &&
-		(file.slice(-3) === '.js'))
+	.filter((file) => {
+		return (
+			(file.indexOf('.') !== 0) &&
+			(file !== basename) &&
+			(file.slice(-3) === '.js'));
+	})
 	.forEach((file) => {
+		console.log(`New model at: ${path.join(__dirname, file)}`);
 		const model = sequelize.import(path.join(__dirname, file));
 		db[model.name] = model;
 	});
