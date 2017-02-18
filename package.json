@@ -1,9 +1,10 @@
 {
   "name": "chatr-apiserver",
   "version": "0.0.1",
-  "description": "",
+  "description": "Chatr's API server",
   "main": "server.js",
   "scripts": {
+    "start:dev": "nodemon ./bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -18,9 +19,13 @@
   "homepage": "https://github.com/CS307-Group5/chatr-apiserver#readme",
   "dependencies": {
     "body-parser": "^1.16.1",
-    "express": "^4.14.1"
+    "express": "^4.14.1",
+    "pg": "^6.1.2",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.30.2"
   },
   "devDependencies": {
-    "eslint": "^3.15.0"
+    "eslint": "^3.15.0",
+    "nodemon": "^1.11.0"
   }
 }
