@@ -1,8 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
 
 const app = express();
 const port = process.env.PORT || 8080;
+
+//Load '.env' into process.env
+dotenv.config();
 
 //Parses POST request bodys into req.body.[key] and Accepts JSON or url encoding.
 app.use(bodyParser.json());
