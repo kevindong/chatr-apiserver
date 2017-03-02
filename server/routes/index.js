@@ -18,4 +18,7 @@ module.exports = (app) => {
 	app.get('/users/testGet', usersController.testGet);
 	app.get('/usermodules/testGet', userModulesController.testGet);
 	app.get('/modules/testGet', modulesController.testGet);
+
+	// Module endpoints
+	app.get('/modules/get/:moduleId', modulesController.retrieve);
 };
