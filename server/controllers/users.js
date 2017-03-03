@@ -1,6 +1,9 @@
 const User = require('../models').User;
 
 module.exports = {
+	testGet(req, res) {
+		res.status(200).send('speaking from the users controller!');
+	},
 	create(req, res) {
 		return User
 			.create({
