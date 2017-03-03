@@ -3,19 +3,11 @@ const userModulesController = require('../controllers').usermodules;
 const modulesController = require('../controllers').modules;
 
 module.exports = (app) => {
-	// Example non-trivial code; delete at will
-	app.get('/route', (req, res) => {
-		res.status(200).send(
-			{
-				message: 'Welcome to the main routes file!',
-			}
-		);
-	});
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
 
-	// Proof that the three controllers work
-	app.get('/users/testGet', usersController.testGet);
-	app.get('/usermodules/testGet', userModulesController.testGet);
-	app.get('/modules/testGet', modulesController.testGet);
+	app.post('/modules/upload', modulesController.uploadModule);
+	app.get('/modules/list', modulesController.getModules);
+	app.get('/modules/:user/list', modulesController.getModulesForUser);
+	app.get('/modules/:moduleId', modulesController.getModule);
 };
