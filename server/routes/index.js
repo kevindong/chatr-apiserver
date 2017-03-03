@@ -11,6 +11,5 @@ module.exports = (app) => {
 	app.get('/modules/list', modulesController.getModules);
 	app.get('/modules/:user/list', modulesController.getModulesForUser);
 	app.get('/modules/:moduleId', modulesController.getModule);
-	// Module endpoints
 	app.get('/modules/get/:moduleId', modulesController.retrieve);
 };
