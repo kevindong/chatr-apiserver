@@ -25,12 +25,10 @@ module.exports = (sequelize, DataTypes) => {
 		classMethods: {
 			associate: (models) => {
 				User.hasMany(models.Module, {
-					foreignKey: 'moduleId',
-					as: 'modules',
+					foreignKey: 'id',
 				}),
 				User.hasMany(models.UserModule, {
-					foreignKey: 'userModuleId',
-					as: 'userModules',
+					foreignKey: 'id',
 				});
 			},
 		},

@@ -40,12 +40,11 @@ module.exports = (sequelize, DataTypes) => {
 		classMethods: {
 			associate: (models) => {
 				Module.belongsTo(models.User, {
-					foreignKey: 'userId',
+					foreignKey: 'id',
 					onDelete: 'CASCADE',
 				}),
 				Module.hasMany(models.UserModule, {
-					foreignKey: 'userModuleId',
-					as: 'userModules',
+					foreignKey: 'id',
 				});
 			},
 		},
