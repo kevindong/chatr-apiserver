@@ -22,4 +22,9 @@ module.exports = (app) => {
 
 	// Module endpoints
 	app.get('/modules/get/:moduleId', modulesController.retrieve);
+	
+	// Admin Console
+	app.get('/modules/pending', modulesController.pending);
+    app.post('/modules/approve', modulesController.approve);
+    app.post('/modules/deny', modulesController.deny);
 };

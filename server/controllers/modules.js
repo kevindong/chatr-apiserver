@@ -20,4 +20,38 @@ module.exports = {
 				res.status(400).send('Error looking up module');
 			});
 	},
+    pending(req, res) {
+        return Modules
+            .findAll({
+                where: {
+                    $or: [
+                        {codeIsApproved: false},
+                        {
+                            $and: [
+                                {pendingCode: null},
+                                {pendingCodeIsApproved: false},
+                            ]
+                        },
+                    ]
+                }
+            })
+            .then((modules) => {
+                if (!modules) {
+                    return res.status(404).send({
+                        message: 'Modules not found',
+                    });
+                }
+                return res.status(200).send(modules);
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(400).send('Error finding pending modules');
+            })
+    },
+    approve(req, res) {
+        retrieve(req, res).set("pendingCodeIsApproved", true);
+    },
+    deny(req, res) {
+        retrieve(req, res).set("pendingCodeIsDenied", true);
+    },
 };
