@@ -19,8 +19,8 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		codeIsApproved: {
 			type: DataTypes.BOOLEAN,
-			allowNull: false,
-			defaultValue: false,
+			allowNull: true,
+			defaultValue: null,
 		},
 		pendingCode: {
 			type: DataTypes.TEXT,
@@ -28,8 +28,8 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		pendingCodeIsApproved: {
 			type: DataTypes.BOOLEAN,
-			allowNull: false,
-			defaultValue: false,
+			allowNull: true,
+			defaultValue: null,
 		},
 		active: {
 			type: DataTypes.BOOLEAN,
