@@ -14,6 +14,7 @@ module.exports = (app) => {
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
 	app.post('/users/enablemodule', userModulesController.enableModule);
+	app.post('/users/disablemodule', userModulesController.disableModule);
 
 	// Proof that the three controllers work
 	app.get('/users/testGet', usersController.testGet);

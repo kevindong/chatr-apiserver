@@ -25,4 +25,25 @@ module.exports = {
 				});
 			});
 	},
+	disableModule(req, res) {
+		return UserModules
+			.findOrCreate({
+				where: {
+					userId: req.body.userId,
+					moduleId: req.body.moduleId,
+				},
+				defaults: {
+					active: false,
+				},
+			})
+			.spread((user, created) => {
+				user
+				.update({
+					active: false,
+				})
+				.then((userModule) => {
+					res.status(200).send(userModule);
+				});
+			});
+	},
 };
