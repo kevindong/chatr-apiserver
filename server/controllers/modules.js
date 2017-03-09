@@ -4,7 +4,6 @@ const config = require('../../webpack.config');
 const webpack = require('webpack')(config);
 const spawn = require('child_process').spawn;
 const fs = require('fs');
-const pg = require('pg');
 
 
 function uploadModule(req, res) {
@@ -15,6 +14,7 @@ function uploadModule(req, res) {
 	let desc = req.body.module_id;
 
 	insertInDatabase(name, desc, userId, code);
+	res.status(200);
 }
 
 function getModules(req, res) {
@@ -26,7 +26,7 @@ function getModulesForUser(req, res) {
 }
 
 function getModule(req, res) {
-
+	res.send(getModuleForId(req.params.moduleId))
 }
 
 /**
@@ -45,41 +45,36 @@ function condenseFiles(files) {
 	}
 }
 
-function insertInDatabase(name, desc, userId, code) {
-	let client = new pg.Client();
-	client.connect(function connect(err) {
-		if (err) throw err;
-		client.query(`INSERT INTO Modules (name, description, userId, code) VALUES (name, desc, userId, code)`, function query(err, res) {
-			if (err) throw err;
+function getModuleForId(mId) {
+	Modules.findAll({
+		where: { moduleId: mId }
+	}).then(m => { return m; });
+}
 
-			client.end(function end(err) {
-				if (err) throw err;
-			});
-		});
+function insertInDatabase(name, desc, userId, code) {
+	Modules.create({
+		name: name,
+		userId: userId,
+		description: desc,
+		code: code
 	});
 }
 
-function listModules(user) {
-	let client = new pg.Client();
-	client.connect(function (err) {
-		if (err) throw err;
-
-		// execute a query on our database
-		client.query("SELECT name FROM Modules" + (user != null ? " WHERE userId=" + user : ""), function (err, result) {
-			if (err) throw err;
-
-			// disconnect the client
-			client.end(function (err) {
-				if (err) throw err;
-			});
-
-			return result.rows.map(item => item.name);
-		});
-	});
+function listModules(userId) {
+	if (userId) {
+		Modules.findAll({
+			where: { userId: userId }
+		}).then(m => { return m });
+	} else {
+		Modules.findAll().then(m => { return m });
+	}
 }
 
 
 module.exports = {
+	testGet(req, res) {
+		res.status(200).send('speaking from the modules controller!');
+	},
 	retrieve(req, res) {
 		return Modules
 			.findById(req.params.moduleId)
@@ -96,5 +91,39 @@ module.exports = {
 				res.status(400).send('Error looking up module');
 			});
 	},
+    pending(req, res) {
+        return Modules
+            .findAll({
+                where: {
+                    $or: [
+                        {codeIsApproved: false},
+                        {
+                            $and: [
+                                {pendingCode: null},
+                                {pendingCodeIsApproved: false},
+                            ]
+                        },
+                    ]
+                }
+            })
+            .then((modules) => {
+                if (!modules) {
+                    return res.status(404).send({
+                        message: 'Modules not found',
+                    });
+                }
+                return res.status(200).send(modules);
+            })
+            .catch((error) => {
+                console.log(error);
+                res.status(400).send('Error finding pending modules');
+            })
+    },
+    approve(req, res) {
+        retrieve(req, res).set("pendingCodeIsApproved", true);
+    },
+    deny(req, res) {
+        retrieve(req, res).set("pendingCodeIsDenied", true);
+    },
 	uploadModule, getModules, getModulesForUser, getModule
 };
