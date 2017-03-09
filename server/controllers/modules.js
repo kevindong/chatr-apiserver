@@ -1,4 +1,3 @@
-"use strict";
 const Modules = require('../models').Module;
 const config = require('../../webpack.config');
 const webpack = require('webpack')(config);
@@ -69,7 +68,6 @@ function listModules(userId) {
 		Modules.findAll().then(m => { return m });
 	}
 }
-
 
 module.exports = {
 	testGet(req, res) {
