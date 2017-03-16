@@ -12,7 +12,7 @@ const webhookHandler = (req, res) => {
 		//Verify the access token
 		if (req.query['hub.verify_token'] === process.env.PAGE_ACCESS_TOKEN) {
 			console.log('Authenticated...');
-			res.status(200).send(req.qeury['hub.challenge']);
+			res.status(200).send(req.query['hub.challenge']);
 		} else {
 			//Failed authentication
 			console.log(`Authentication failed. Token received: ${req.query['hub.verify_token']}, expected: ${process.env.PAGE_ACCESS_TOKEN}`);
