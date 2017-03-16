@@ -31,6 +31,5 @@ module.exports = (app) => {
     app.post('/modules/deny', modulesController.deny);
 
 	// Messaging endpoints
-	app.post('/receivemessage', messagingController.receiveMessage);
-	app.get('/facebooksubscription', messagingController.facebookSubscription);
+	app.get('/webhookhandler', messagingController.webhookHandler);
 };
