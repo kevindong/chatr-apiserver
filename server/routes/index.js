@@ -32,4 +32,5 @@ module.exports = (app) => {
 
 	// Messaging endpoints
 	app.post('/receivemessage', messagingController.receiveMessage);
+	app.get('/facebooksubscription', messagingController.facebookSubscription);
 };
