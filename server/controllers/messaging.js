@@ -7,20 +7,6 @@ const sendMessage = (message) => {
 };
 
 const webhookHandler = (req, res) => {
-	//See if we are getting a subscription event
-	if (req.query['hub.mode'] === 'subscribe') {
-		//Verify the access token
-		if (req.query['hub.verify_token'] === process.env.PAGE_ACCESS_TOKEN) {
-			console.log('Authenticated...');
-			res.status(200).send(req.query['hub.challenge']);
-		} else {
-			//Failed authentication
-			console.log(`Authentication failed. Token received: ${req.query['hub.verify_token']}, expected: ${process.env.PAGE_ACCESS_TOKEN}`);
-			res.sendStatus(403);
-		}
-		return;
-	}
-
 	const data = req.body;
 	if (data.object === 'page') {
 		data.entry.forEach((entry) => {
@@ -41,8 +27,23 @@ const webhookHandler = (req, res) => {
 	res.sendStatus(200);
 };
 
+const webhookAuthenticator = (req, res) => {
+	if (req.query['hub.mode'] === 'subscribe') {
+		//Verify the access token
+		if (req.query['hub.verify_token'] === process.env.PAGE_ACCESS_TOKEN) {
+			console.log('Authenticated...');
+			res.status(200).send(req.query['hub.challenge']);
+		} else {
+			//Failed authentication
+			console.log(`Authentication failed. Token received: ${req.query['hub.verify_token']}, expected: ${process.env.PAGE_ACCESS_TOKEN}`);
+			res.sendStatus(403);
+		}
+	}
+};
+
 module.exports = {
 	receiveMessage: receiveMessage,
 	sendMessage: sendMessage,
 	webhookHandler: webhookHandler,
+	webhookAuthenticator: webhookAuthenticator,
 };
