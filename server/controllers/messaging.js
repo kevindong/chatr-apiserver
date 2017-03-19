@@ -1,5 +1,5 @@
 const receiveMessage = (event) => {
-	console.log(`Received a message: ${event}`);
+	console.log(`Received a message: ${JSON.stringify(event)}`);
 };
 
 const sendMessage = (message) => {
