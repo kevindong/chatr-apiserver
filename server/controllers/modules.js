@@ -123,5 +123,8 @@ module.exports = {
     deny(req, res) {
         retrieve(req, res).set("pendingCodeIsDenied", true);
     },
-	uploadModule, getModules, getModulesForUser, getModule
+	uploadModule,
+	getModules,
+	getModulesForUser,
+	getModule
 };

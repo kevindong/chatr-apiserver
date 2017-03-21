@@ -46,4 +46,7 @@ module.exports = {
 				});
 			});
 	},
+	getCount(req, res) {
+		UserModules.findAndCountAll({where: {moduleId: req.params.id}}).then(r => res.send(r.count));
+	}
 };
