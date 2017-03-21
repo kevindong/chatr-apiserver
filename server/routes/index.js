@@ -24,6 +24,9 @@ module.exports = (app) => {
 
 	// Module endpoints
 	app.get('/modules/get/:moduleId', modulesController.retrieve);
+	app.post('/modules/upload', modulesController.uploadModule);
+	app.get('/modules/getByUser/:userId', modulesController.getModulesForUser);
+	app.get('/modules/get', modulesController.getModules);
 
 	// Admin Console
 	app.get('/modules/pending', modulesController.pending);

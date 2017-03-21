@@ -94,14 +94,9 @@ module.exports = {
 		res.status(200);
 	},
 	getModules(req, res) {
-		res.send(listModules(null));
+		Modules.findAll().then(r => res.send(r));
 	},
 	getModulesForUser(req, res) {
-		Modules.findAll().then(m => res.send(m));
-	},
-	getModule(req, res) {
-		Modules.findAll({
-			where: {userId: req.params.moduleId}
-		}).then(m => res.send(m));
+		Modules.findAll({where: {userId: req.params.userId}}).then(m => res.send(m));
 	}
 };
