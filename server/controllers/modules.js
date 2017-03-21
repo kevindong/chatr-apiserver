@@ -9,23 +9,23 @@ const fs = require('fs');
  * @return {File} the condensed file
  */
 function condenseFiles(files) {
-	if (files.length > 1) {
-		spawn('mkdir', ['/temp/chatr', '&&', 'cd', '/temp/chatr']);
-		files.forEach(file => fs.writeFileSync(file.name, file, null));
-		spawn('npm', ['install']);
-		webpack.run();
-		return fs.readFileSync('bundle.js', 'utf-8');
-	} else {
-		return files[0];
-	}
-}
-
-function insertInDatabase(name, desc, userId, code) {
-	Modules.create({
-		name: name,
-		userId: userId,
-		description: desc,
-		code: code
+	new Promise((resolve, reject) => {
+		if (files.length > 1) {
+			spawn('mkdir', ['/temp/chatr'])
+				.on('close', status => {
+					spawn('cd', ['/temp/chatr'])
+						.on('close', status => {
+							files.forEach(file => fs.writeFileSync(file.name, file, null));
+							spawn('npm', ['install'])
+								.on('close', status => {
+									webpack.run();
+									resolve(fs.readFileSync('bundle.js', 'utf-8'));
+								});
+						});
+				});
+		} else {
+			resolve(fs.readFileSync(files[0], 'utf-8'));
+		}
 	});
 }
 
@@ -90,7 +90,12 @@ module.exports = {
 		let name = req.body.module_name;
 		let desc = req.body.module_id;
 
-		insertInDatabase(name, desc, userId, code);
+		Modules.create({
+			name: name,
+			userId: userId,
+			description: desc,
+			code: code
+		});
 		res.status(200);
 	},
 	getModules(req, res) {
