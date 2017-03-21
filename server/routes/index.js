@@ -2,6 +2,7 @@ const usersController = require('../controllers').users;
 const userModulesController = require('../controllers').usermodules;
 const modulesController = require('../controllers').modules;
 const messagingController = require('../controllers').messaging;
+const multer = require('multer')();
 
 module.exports = (app) => {
 	// Example non-trivial code; delete at will
@@ -24,7 +25,7 @@ module.exports = (app) => {
 
 	// Module endpoints
 	app.get('/modules/get/:moduleId', modulesController.retrieve);
-	app.post('/modules/upload', modulesController.uploadModule);
+	app.post('/modules/upload', multer.array('code'), modulesController.uploadModule);
 	app.get('/modules/getByUser/:userId', modulesController.getModulesForUser);
 	app.get('/modules/get', modulesController.getModules);
 

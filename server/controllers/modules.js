@@ -1,7 +1,8 @@
+"use strict";
 const Modules = require('../models').Module;
 const config = require('../../webpack.config');
 const webpack = require('webpack')(config);
-const spawn = require('child_process').spawn;
+const exec = require('child_process').exec;
 const fs = require('fs');
 
 /**
@@ -9,23 +10,18 @@ const fs = require('fs');
  * @return {File} the condensed file
  */
 function condenseFiles(files) {
-	new Promise((resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		if (files.length > 1) {
-			spawn('mkdir', ['/temp/chatr'])
-				.on('close', status => {
-					spawn('cd', ['/temp/chatr'])
-						.on('close', status => {
-							files.forEach(file => fs.writeFileSync(file.name, file, null));
-							spawn('npm', ['install'])
-								.on('close', status => {
-									webpack.run();
-									resolve(fs.readFileSync('bundle.js', 'utf-8'));
-								});
-						});
+			exec('mkdir -p /tmp/chatr', (err, stdout, stderr) => {
+				exec('cd /tmp/chatr', (err, stdout, stderr) => {
+					files.forEach(f => fs.writeFileSync('/temp/chatr/' + f.originalname, f.buffer));
+					exec('npm install', (err, stdout, stderr) => {
+						webpack.run();
+						resolve(fs.readFileSync('bundle.js', 'utf-8'));
+					});
 				});
-		} else {
-			resolve(fs.readFileSync(files[0], 'utf-8'));
-		}
+			});
+		} else resolve(files[0].buffer.toString());
 	});
 }
 
@@ -84,19 +80,19 @@ module.exports = {
 		retrieve(req, res).set("pendingCodeIsDenied", true);
 	},
 	uploadModule(req, res) {
-		let files = req.files.map(file => file.path);
-		let code = condenseFiles(files);
-		let userId = req.body.userId;
-		let name = req.body.module_name;
-		let desc = req.body.module_id;
+		console.log(req.files);
+		condenseFiles(req.files).then(code => {
+			console.log("the code is " + code);
+			Modules.create({
+				name: req.body.module_name,
+				userId: req.body.userId,
+				description: req.body.module_desc,
+				code: code
+			});
 
-		Modules.create({
-			name: name,
-			userId: userId,
-			description: desc,
-			code: code
+			res.status(200);
+			res.send("Good!");
 		});
-		res.status(200);
 	},
 	getModules(req, res) {
 		Modules.findAll().then(r => res.send(r));
