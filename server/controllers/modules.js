@@ -1,25 +1,18 @@
 "use strict";
 const Modules = require('../models').Module;
-const config = require('../../webpack.config');
+const config = require('../../webpack.config')(__dirname);
 const webpack = require('webpack')(config);
 const exec = require('child_process').exec;
 const fs = require('fs');
 
-/**
- * @param {Array} files array of files
- * @return {File} the condensed file
- */
 function condenseFiles(files) {
 	return new Promise((resolve, reject) => {
 		if (files.length > 1) {
-			exec('mkdir -p /tmp/chatr', (err, stdout, stderr) => {
-				exec('cd /tmp/chatr', (err, stdout, stderr) => {
-					files.forEach(f => fs.writeFileSync('/temp/chatr/' + f.originalname, f.buffer));
-					exec('npm install', (err, stdout, stderr) => {
-						webpack.run();
-						resolve(fs.readFileSync('bundle.js', 'utf-8'));
-					});
-				});
+			if (!fs.existsSync(__dirname + '/tmp')) fs.mkdirSync(__dirname + '/tmp');
+			files.forEach(f => fs.writeFileSync(__dirname + '/tmp/' + f.originalname, f.buffer));
+			exec('cd ' + __dirname + '/tmp && npm install', (err, stdout, stderr) => {
+				webpack.run();
+				resolve(fs.readFileSync(__dirname + '/tmp/bundle.js', 'utf-8'));
 			});
 		} else resolve(files[0].buffer.toString());
 	});
@@ -80,9 +73,7 @@ module.exports = {
 		retrieve(req, res).set("pendingCodeIsDenied", true);
 	},
 	uploadModule(req, res) {
-		console.log(req.files);
 		condenseFiles(req.files).then(code => {
-			console.log("the code is " + code);
 			Modules.create({
 				name: req.body.module_name,
 				userId: req.body.userId,
@@ -90,14 +81,13 @@ module.exports = {
 				code: code
 			});
 
-			res.status(200);
-			res.send("Good!");
+			res.status(200).send(code);
 		});
 	},
 	getModules(req, res) {
-		Modules.findAll().then(r => res.send(r));
+		Modules.findAll().then(res.send);
 	},
 	getModulesForUser(req, res) {
-		Modules.findAll({where: {userId: req.params.userId}}).then(m => res.send(m));
+		Modules.findAll({where: {userId: req.params.userId}}).then(res.send);
 	}
 };

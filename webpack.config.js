@@ -1,4 +1,6 @@
-module.exports = {
-	entry: 'index.js',
-	output: { filename: 'bundle.js' }
+module.exports = dir => {
+	return {
+		entry: dir + '/tmp/index.js',
+		output: { filename: 'bundle.js' }
+	};
 };
