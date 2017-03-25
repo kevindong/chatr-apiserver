@@ -35,4 +35,26 @@ module.exports = {
 				res.status(400).send(error);
 			});
 	},
+	delete(req, res) {
+		if (req.body.email === undefined) {
+			return res.status(400).send('You must specify a user to delete using their email.');
+		}
+		return User
+			.destroy({
+				where: {
+					email: req.body.email
+				}
+			})
+			.then((value) => {
+					if (value !== 0) {
+						return res.status(200).send('User deleted.');
+					} else {
+						return res.status(404).send('User email not found in database.');
+					}
+				}
+			)
+			.catch((error) => {
+				return res.status(400).send(error);
+			});
+	},
 };
