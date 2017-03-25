@@ -1,10 +1,6 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
 	const User = sequelize.define('User', {
-		FBOAuthToken: {
-			type: DataTypes.TEXT,
-			allowNull: true,
-		},
 		FBSenderId: {
 			type: DataTypes.TEXT,
 			allowNull: true,
@@ -17,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.DATE,
 			allowNull: true,
 		},
-		sessionToken: {
+		email: {
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
