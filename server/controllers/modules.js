@@ -86,7 +86,12 @@ module.exports = {
 	},
 	getModules(req, res) {
 		return Modules
-			.findAll()
+			.findAll({
+				where: {
+					codeIsApproved: true,
+					active: true
+				}
+			})
 			.then((modules) => {
 				return res.status(200).send(modules);
 			})
