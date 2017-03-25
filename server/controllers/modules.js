@@ -85,7 +85,15 @@ module.exports = {
 		});
 	},
 	getModules(req, res) {
-		Modules.findAll().then(res.send);
+		return Modules
+			.findAll()
+			.then((modules) => {
+				return res.status(200).send(modules);
+			})
+			.catch((error) => {
+				console.log(error);
+				res.status(400).send('Error finding pending modules');
+			})
 	},
 	getModulesForUser(req, res) {
 		Modules.findAll({where: {userId: req.params.userId}}).then(res.send);
