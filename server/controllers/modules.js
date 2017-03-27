@@ -110,7 +110,9 @@ module.exports = {
 		return Modules
 			.findAll({
 				where: {
-					codeIsApproved: true,
+					code: {
+						$ne: null,
+					},
 					active: true
 				}
 			})
@@ -119,7 +121,7 @@ module.exports = {
 			})
 			.catch((error) => {
 				console.log(error);
-				res.status(400).send('Error finding pending modules');
+				return res.status(400).send('Error finding pending modules');
 			})
 	},
 	getModulesForUser(req, res) {
