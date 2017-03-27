@@ -15,10 +15,6 @@ module.exports = (sequelize, DataTypes) => {
 		},
 		code: {
 			type: DataTypes.TEXT,
-			allowNull: false,
-		},
-		codeIsApproved: {
-			type: DataTypes.BOOLEAN,
 			allowNull: true,
 			defaultValue: null,
 		},
