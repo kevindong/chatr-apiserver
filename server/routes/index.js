@@ -32,8 +32,8 @@ module.exports = (app) => {
 
 	// Admin Console
 	app.get('/modules/pending', modulesController.pending);
-	app.post('/modules/approve', modulesController.approve);
-	app.post('/modules/deny', modulesController.deny);
+	app.post('/modules/approve/:moduleId', modulesController.approve);
+	app.post('/modules/deny/:moduleId', modulesController.deny);
 
 	// Messaging endpoints
 	app.get('/webhookhandler', messagingController.webhookAuthenticator);

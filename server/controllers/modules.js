@@ -42,15 +42,10 @@ module.exports = {
 		return Modules
 			.findAll({
 				where: {
-					$or: [
-						{codeIsApproved: false},
-						{
-							$and: [
-								{pendingCode: null},
-								{pendingCodeIsApproved: false},
-							]
-						},
-					]
+					pendingCode: {
+						$ne: null,
+					},
+					pendingCodeIsApproved: null,
 				}
 			})
 			.then((modules) => {
@@ -67,10 +62,38 @@ module.exports = {
 			})
 	},
 	approve(req, res) {
-		retrieve(req, res).set("pendingCodeIsApproved", true);
+		Modules
+			.update({
+				pendingCodeIsApproved: true
+			}, {
+				where: {
+					id: req.params.moduleId
+				}
+			})
+			.then((module) => {
+				res.status(200).send('Module approved');
+			})
+			.catch((error) => {
+				console.log(error);
+				res.status(400).send('Error approving module');
+			});
 	},
 	deny(req, res) {
-		retrieve(req, res).set("pendingCodeIsDenied", true);
+		Modules
+			.update({
+				pendingCodeIsApproved: false
+			}, {
+				where: {
+					id: req.params.moduleId
+				}
+			})
+			.then((module) => {
+				res.status(200).send('Module denied');
+			})
+			.catch((error) => {
+				console.log(error);
+				res.status(400).send('Error denying module');
+			});
 	},
 	uploadModule(req, res) {
 		condenseFiles(req.files).then(code => {
@@ -80,7 +103,6 @@ module.exports = {
 				description: req.body.module_desc,
 				code: code
 			});
-
 			res.status(200).send(code);
 		});
 	},
