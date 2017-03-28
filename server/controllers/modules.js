@@ -4,6 +4,7 @@ const config = require('../../webpack.config')(__dirname);
 const webpack = require('webpack')(config);
 const exec = require('child_process').exec;
 const fs = require('fs');
+let Sequelize = require("sequelize");
 
 function condenseFiles(files) {
 	return new Promise((resolve, reject) => {
@@ -126,5 +127,18 @@ module.exports = {
 	},
 	getModulesForUser(req, res) {
 		Modules.findAll({where: {userId: req.params.userId}}).then(res.send);
+	},
+	search(req, res) {
+		let query = req.query.q;
+
+		let searchIn = Object.keys(req.query).filter(k => {
+			return k !== 'q' && req.query[k];
+		});
+		let where = {};
+		searchIn.forEach(i => {
+			where[i] = Sequelize.where(Sequelize.fn('lower', Sequelize.col(i)), {$like: '%' + query.toLowerCase() + '%'});
+		});
+
+		return Modules.findAll({where: {"or": where}}).then(modules => res.send(modules));
 	}
 };
