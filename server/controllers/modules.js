@@ -134,11 +134,14 @@ module.exports = {
 		let searchIn = Object.keys(req.query).filter(k => {
 			return k !== 'q' && req.query[k];
 		});
-		let where = {};
+
+		let or = [];
 		searchIn.forEach(i => {
-			where[i] = Sequelize.where(Sequelize.fn('lower', Sequelize.col(i)), {$like: '%' + query.toLowerCase() + '%'});
+			const item = {};
+			item[i] = {$iLike: '%' + query.toLowerCase() + '%'};
+			or.push(item);
 		});
 
-		return Modules.findAll({where: {"or": where}}).then(modules => res.send(modules));
+		return Modules.findAll({where: {"$or": or}}).then(modules => res.send(modules));
 	}
 };
