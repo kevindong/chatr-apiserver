@@ -35,9 +35,11 @@ module.exports = (app) => {
 	app.post('/modules/approve/:moduleId', modulesController.approve);
 	app.post('/modules/deny/:moduleId', modulesController.deny);
 
+	// User-Modules endpoints
+	app.get('/usermodules/:id/getCount', userModulesController.getCount);
+
 	// Messaging endpoints
 	app.get('/webhookhandler', messagingController.webhookAuthenticator);
 	app.post('/webhookhandler', messagingController.webhookHandler);
-
-    app.get('/usermodules/:id/getCount', userModulesController.getCount);
+	app.post('/bot/send-to/:id', messagingController.sendMessageReq);
 };

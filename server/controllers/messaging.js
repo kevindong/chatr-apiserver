@@ -1,9 +1,41 @@
+const User = require('../models').User;
+const request = require('request');
+
 const receiveMessage = (event) => {
 	console.log(`Received a message: ${JSON.stringify(event)}`);
 };
 
-const sendMessage = (message) => {
+const sendMessage = (user, message, quickReplies) => {
+	if (!user || !message) {
+		console.error(`Could not send message, "${message}", to user, ${user}`);
+		return;
+	}
+	const postData = {
+		recipient: {
+			id: `${user}`,
+		},
+		message: {
+			text: message,
+		},
+	};
+	request.post({
+		url: `https://graph.facebook.com/v2.6/me/messages?access_token=${process.env.PAGE_ACCESS_TOKEN}`,
+		json: postData,
+	}, (error, response, body) => {
+		if (response.statusCode !== 200 || error) {
+			console.error(response);
+			console.error(error);
+			return;
+		}
+		console.log(`Sent message_id ${body.message_id} to recipient_id ${body.recipient_id}`);
+	});
+};
 
+const sendMessageReq = (req, res) => {
+	const message = req.body.message;
+	const user = req.params.id;
+	sendMessage(user, message);
+	res.status(200).end();
 };
 
 const webhookHandler = (req, res) => {
@@ -43,7 +75,7 @@ const webhookAuthenticator = (req, res) => {
 
 module.exports = {
 	receiveMessage: receiveMessage,
-	sendMessage: sendMessage,
+	sendMessageReq: sendMessageReq,
 	webhookHandler: webhookHandler,
 	webhookAuthenticator: webhookAuthenticator,
 };
