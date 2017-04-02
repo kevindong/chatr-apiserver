@@ -29,6 +29,7 @@ module.exports = (app) => {
 	app.post('/modules/upload', multer.array('code'), modulesController.uploadModule);
 	app.get('/modules/getByUser/:userId', modulesController.getModulesForUser);
 	app.get('/modules/get', modulesController.getModules);
+	app.post('/modules/delete', modulesController.delete);
 
 	// Admin Console
 	app.get('/modules/pending', modulesController.pending);
