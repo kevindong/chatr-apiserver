@@ -39,6 +39,7 @@ module.exports = (app) => {
 
 	// User-Modules endpoints
 	app.get('/usermodules/:id/getCount', userModulesController.getCount);
+	app.get('/usermodules/:id', userModulesController.retrieve);
 
 	// Messaging endpoints
 	app.get('/webhookhandler', messagingController.webhookAuthenticator);
