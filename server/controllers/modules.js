@@ -143,5 +143,27 @@ module.exports = {
 		});
 
 		return Modules.findAll({where: {"$or": or}}).then(modules => res.send(modules));
-	}
+	},
+	delete(req, res) {
+		if (req.body.id === undefined) {
+			return res.status(400).send('You must specify the ID of the module to be deleted.');
+		}
+		return Modules
+			.destroy({
+				where: {
+					id: req.body.id
+				}
+			})
+			.then((value) => {
+					if (value !== 0) {
+						return res.status(200).send('Module deleted.');
+					} else {
+						return res.status(404).send('Module not found in database.');
+					}
+				}
+			)
+			.catch((error) => {
+				return res.status(400).send(error);
+			});
+	},
 };
