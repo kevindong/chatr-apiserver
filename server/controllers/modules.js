@@ -102,9 +102,31 @@ module.exports = {
 				name: req.body.module_name,
 				userId: req.body.userId,
 				description: req.body.module_desc,
-				code: code
+				code: code,
+				codeIsApproved: false,
+				createdAt: new Date()
+			}).then(() => {
+				res.status(200).end();
+			}).catch((e) => {
+				res.status(500).send(e)
 			});
-			res.status(200).send(code);
+		});
+	},
+	update(req, res) {
+		condenseFiles(req.files).then(code => {
+			Modules.update({
+				pendingCode: code,
+				pendingCodeIsApproved: false,
+				updatedAt: new Date()
+			}, {
+				where: {
+					id: req.params.moduleId
+				}
+			}).then(() => {
+				res.status(200).end()
+			}).catch((e) => {
+				res.status(500).send(e)
+			});
 		});
 	},
 	getModules(req, res) {
