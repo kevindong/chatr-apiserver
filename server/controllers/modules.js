@@ -1,19 +1,29 @@
 "use strict";
 const Modules = require('../models').Module;
-const config = require('../../webpack.config')(__dirname);
+const config = require('../../webpack.config');
 const webpack = require('webpack')(config);
-const exec = require('child_process').exec;
 const fs = require('fs');
-let Sequelize = require("sequelize");
+const os = require('os');
+const npmi = require('npmi');
 
 function condenseFiles(files) {
 	return new Promise((resolve, reject) => {
 		if (files.length > 1) {
-			if (!fs.existsSync(__dirname + '/tmp')) fs.mkdirSync(__dirname + '/tmp');
-			files.forEach(f => fs.writeFileSync(__dirname + '/tmp/' + f.originalname, f.buffer));
-			exec('cd ' + __dirname + '/tmp && npm install', (err, stdout, stderr) => {
-				webpack.run();
-				resolve(fs.readFileSync(__dirname + '/tmp/bundle.js', 'utf-8'));
+			files.forEach(f => fs.writeFileSync(os.tmpdir() + '/' + f.originalname, f.buffer));
+			npmi({path: os.tmpdir()}, (err, data) => {
+				if (err) {
+					console.error(err);
+					reject(err);
+				}
+
+				webpack.run((err, stats) => {
+					if (err) {
+						console.error(err);
+						reject(err);
+					}
+
+					resolve(fs.readFileSync(os.tmpdir() + '/bundle.js', 'utf-8'));
+				});
 			});
 		} else resolve(files[0].buffer.toString());
 	});
@@ -33,8 +43,7 @@ module.exports = {
 					});
 				}
 				return res.status(200).send(module);
-			})
-			.catch((error) => {
+			}).catch((error) => {
 				console.log(error);
 				res.status(400).send('Error looking up module');
 			});
@@ -48,16 +57,14 @@ module.exports = {
 					},
 					pendingCodeIsApproved: null,
 				}
-			})
-			.then((modules) => {
+			}).then((modules) => {
 				if (!modules) {
 					return res.status(404).send({
 						message: 'Modules not found',
 					});
 				}
 				return res.status(200).send(modules);
-			})
-			.catch((error) => {
+			}).catch((error) => {
 				console.log(error);
 				res.status(400).send('Error finding pending modules');
 			})
@@ -70,14 +77,12 @@ module.exports = {
 				where: {
 					id: req.params.moduleId
 				}
-			})
-			.then((module) => {
-				res.status(200).send('Module approved');
-			})
-			.catch((error) => {
-				console.log(error);
-				res.status(400).send('Error approving module');
-			});
+			}).then((module) => {
+			res.status(200).send('Module approved');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error approving module');
+		});
 	},
 	deny(req, res) {
 		Modules
@@ -87,17 +92,16 @@ module.exports = {
 				where: {
 					id: req.params.moduleId
 				}
-			})
-			.then((module) => {
-				res.status(200).send('Module denied');
-			})
-			.catch((error) => {
-				console.log(error);
-				res.status(400).send('Error denying module');
-			});
+			}).then((module) => {
+			res.status(200).send('Module denied');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error denying module');
+		});
 	},
 	uploadModule(req, res) {
 		condenseFiles(req.files).then(code => {
+			console.log("condensed files");
 			Modules.create({
 				name: req.body.module_name,
 				userId: req.body.userId,
@@ -106,6 +110,7 @@ module.exports = {
 				codeIsApproved: false,
 				createdAt: new Date()
 			}).then(() => {
+				console.log("created");
 				res.status(200).end();
 			}).catch((e) => {
 				res.status(500).send(e)
@@ -120,7 +125,7 @@ module.exports = {
 				updatedAt: new Date()
 			}, {
 				where: {
-					id: req.params.moduleId
+					id: req.body.moduleId
 				}
 			}).then(() => {
 				res.status(200).end()
@@ -138,11 +143,9 @@ module.exports = {
 					},
 					active: true
 				}
-			})
-			.then((modules) => {
+			}).then((modules) => {
 				return res.status(200).send(modules);
-			})
-			.catch((error) => {
+			}).catch((error) => {
 				console.log(error);
 				return res.status(400).send('Error finding pending modules');
 			})
@@ -175,16 +178,14 @@ module.exports = {
 				where: {
 					id: req.body.id
 				}
-			})
-			.then((value) => {
+			}).then((value) => {
 					if (value !== 0) {
 						return res.status(200).send('Module deleted.');
 					} else {
 						return res.status(404).send('Module not found in database.');
 					}
 				}
-			)
-			.catch((error) => {
+			).catch((error) => {
 				return res.status(400).send(error);
 			});
 	},
