@@ -17,6 +17,11 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.TEXT,
 			allowNull: true,
 		},
+		isAdmin: {
+			type: DataTypes.TEXT,
+			allowNull: false,
+			defaultValue: false,
+		},
 	}, {
 		classMethods: {
 			associate: (models) => {
