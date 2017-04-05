@@ -101,7 +101,6 @@ module.exports = {
 	},
 	uploadModule(req, res) {
 		condenseFiles(req.files).then(code => {
-			console.log("condensed files");
 			Modules.create({
 				name: req.body.module_name,
 				userId: req.body.userId,
@@ -110,7 +109,6 @@ module.exports = {
 				codeIsApproved: false,
 				createdAt: new Date()
 			}).then(() => {
-				console.log("created");
 				res.status(200).end();
 			}).catch((e) => {
 				res.status(500).send(e)
