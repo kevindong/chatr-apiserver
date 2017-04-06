@@ -39,7 +39,7 @@ const sendMessageReq = (req, res) => {
 };
 const receiveMessage = (event) => {
 	console.log(`Received a message: ${JSON.stringify(event)}`);
-	sendMessage(event.sender_id, 'Hey there!');
+	sendMessage(event.sender.id, 'Hey there!');
 };
 /* For next sprint
 const receiveMessage = (event) => {
