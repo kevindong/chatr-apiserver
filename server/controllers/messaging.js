@@ -1,8 +1,8 @@
 const User = require('../models').User;
 const request = require('request');
 
-const receiveMessage = (event) => {
-	console.log(`Received a message: ${JSON.stringify(event)}`);
+const linkUser = () => {
+
 };
 
 const sendMessage = (user, message, quickReplies) => {
@@ -37,7 +37,28 @@ const sendMessageReq = (req, res) => {
 	sendMessage(user, message);
 	res.status(200).end();
 };
-
+const receiveMessage = (event) => {
+	console.log(`Received a message: ${JSON.stringify(event)}`);
+	sendMessage(event.sender.id, 'Hey there!');
+};
+/* For next sprint
+const receiveMessage = (event) => {
+	const messengerId = event.sender.id;
+	User
+		.find({
+			where: {
+				messengerId: messengerId,
+			},
+		})
+		.then((user) => {
+			sendMessage(messengerId, `Hello there, ${messengerId}!`);
+		})
+		.catch((error) => {
+			sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
+		});
+	console.log(`Received a message: ${JSON.stringify(event)}`);
+};
+*/
 const webhookHandler = (req, res) => {
 	const data = req.body;
 	if (data.object === 'page') {

@@ -187,4 +187,22 @@ module.exports = {
 				return res.status(400).send(error);
 			});
 	},
+	banned(req, res) {
+		return Modules
+			.findAll({
+				where: {
+					isBanned: true,
+				}
+			}).then((modules) => {
+				if (!modules) {
+					return res.status(404).send({
+						message: 'Modules not found',
+					});
+				}
+				return res.status(200).send(modules);
+			}).catch((error) => {
+				console.log(error);
+				res.status(400).send('Error finding banned modules');
+			})
+	},
 };

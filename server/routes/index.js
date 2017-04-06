@@ -13,6 +13,7 @@ module.exports = (app) => {
 			}
 		);
 	});
+	app.get('/users/banned', usersController.banned);
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
 	app.post('/users/enablemodule', userModulesController.enableModule);
@@ -32,8 +33,7 @@ module.exports = (app) => {
 	app.get('/modules/search', modulesController.search);
 	app.post('/modules/delete', modulesController.delete);
 	app.post('/modules/update', modulesController.update);
-
-	// Admin Console
+	app.get('/modules/banned', modulesController.banned);
 	app.get('/modules/pending', modulesController.pending);
 	app.post('/modules/approve/:moduleId', modulesController.approve);
 	app.post('/modules/deny/:moduleId', modulesController.deny);

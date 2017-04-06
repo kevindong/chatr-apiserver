@@ -57,4 +57,22 @@ module.exports = {
 				return res.status(400).send(error);
 			});
 	},
+	banned(req, res) {
+		return User
+			.findAll({
+				where: {
+					isBanned: true,
+				}
+			}).then((users) => {
+				if (!users) {
+					return res.status(404).send({
+						message: 'Users not found',
+					});
+				}
+				return res.status(200).send(users);
+			}).catch((error) => {
+				console.log(error);
+				res.status(400).send('Error finding banned users');
+			})
+	},
 };
