@@ -168,13 +168,13 @@ module.exports = {
 		return Modules.findAll({where: {"$or": or}}).then(modules => res.send(modules));
 	},
 	delete(req, res) {
-		if (req.body.id === undefined) {
+		if (req.params.moduleId === undefined) {
 			return res.status(400).send('You must specify the ID of the module to be deleted.');
 		}
 		return Modules
 			.destroy({
 				where: {
-					id: req.body.id
+					id: req.params.moduleId,
 				}
 			}).then((value) => {
 					if (value !== 0) {
