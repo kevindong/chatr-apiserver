@@ -1,4 +1,6 @@
+"use strict";
 const UserModules = require('../models').UserModule;
+const Modules = require('../models').Module;
 
 module.exports = {
 	testGet(req, res) {
@@ -33,12 +35,12 @@ module.exports = {
 			})
 			.spread((user, created) => {
 				user
-				.update({
-					active: true,
-				})
-				.then((userModule) => {
-					res.status(200).send(userModule);
-				});
+					.update({
+						active: true,
+					})
+					.then((userModule) => {
+						res.status(200).send(userModule);
+					});
 			});
 	},
 	disableModule(req, res) {
@@ -54,15 +56,58 @@ module.exports = {
 			})
 			.spread((user, created) => {
 				user
-				.update({
-					active: false,
-				})
-				.then((userModule) => {
-					res.status(200).send(userModule);
-				});
+					.update({
+						active: false,
+					})
+					.then((userModule) => {
+						res.status(200).send(userModule);
+					});
 			});
 	},
 	getCount(req, res) {
-		UserModules.findAndCountAll({where: {moduleId: req.params.id}}).then(r => res.send(r.count));
+		UserModules.findAndCountAll({
+			where: {
+				moduleId: req.params.moduleId
+			}
+		})
+			.then(r => res.send(r.count.toString()))
+			.catch(e => {
+				console.error(e);
+				res.status(500).send(e);
+			});
+	},
+	getModules(req, res) {
+		UserModules.findAll({
+			where: {
+				id: req.params.botId
+			}
+		})
+			.then(modules => {
+				const ids = modules.map(e => e.dataValues.id);
+				let res = [];
+				new Promise(function (resolve, reject) {
+					(function f(id) {
+						Modules
+							.findById(ids[id])
+							.then(m => {console.log(m); return m;})
+							.then(module => res.push(module.dataValues))
+							.then(() => {
+								if (id === ids.length - 1) resolve(res);
+								else f(id + 1);
+							})
+							.catch(reject);
+					})(0);
+				})
+					.then(res.send)
+					.catch(e => {
+						console.error(e);
+						res.status(500).send(e);
+					});
+			})
+			.then(res.send)
+			.catch(e => {
+				console.error(e);
+				res.status(500).send(e);
+			})
 	}
 };

@@ -142,14 +142,14 @@ module.exports = {
 					active: true
 				}
 			}).then((modules) => {
-				return res.status(200).send(modules);
+				return res.status(200).send(modules.map(e => e.dataValues));
 			}).catch((error) => {
 				console.log(error);
 				return res.status(400).send('Error finding pending modules');
 			})
 	},
 	getModulesForUser(req, res) {
-		Modules.findAll({where: {userId: req.params.userId}}).then(res.send);
+		Modules.findAll({where: {userId: req.params.userId}}).then(m => res.send(m));
 	},
 	search(req, res) {
 		let query = req.query.q;

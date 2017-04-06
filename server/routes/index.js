@@ -39,8 +39,9 @@ module.exports = (app) => {
 	app.post('/modules/deny/:moduleId', modulesController.deny);
 
 	// User-Modules endpoints
-	app.get('/usermodules/:id/getCount', userModulesController.getCount);
+	app.get('/usermodules/:moduleId/getCount', userModulesController.getCount);
 	app.get('/usermodules/:id', userModulesController.retrieve);
+	app.get('/usermodules/:botId/getModules', userModulesController.getModules);
 
 	// Messaging endpoints
 	app.get('/webhookhandler', messagingController.webhookAuthenticator);
