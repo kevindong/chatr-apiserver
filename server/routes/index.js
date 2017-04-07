@@ -32,7 +32,7 @@ module.exports = (app) => {
 	app.get('/modules/get', modulesController.getModules);
 	app.get('/modules/search', modulesController.search);
 	app.post('/modules/delete/:moduleId', modulesController.delete);
-	app.post('/modules/update', modulesController.update);
+	app.post('/modules/update', multer.array('code'), modulesController.update);
 	app.get('/modules/banned', modulesController.banned);
 	app.get('/modules/pending', modulesController.pending);
 	app.post('/modules/approve/:moduleId', modulesController.approve);

@@ -83,28 +83,26 @@ module.exports = {
 			}
 		})
 			.then(modules => {
-				const ids = modules.map(e => e.dataValues.id);
-				let res = [];
+				const ids = modules.map(e => e.dataValues.moduleId);
+				let result = [];
 				new Promise(function (resolve, reject) {
 					(function f(id) {
 						Modules
 							.findById(ids[id])
-							.then(m => {console.log(m); return m;})
-							.then(module => res.push(module.dataValues))
+							.then(module => result.push(module.dataValues))
 							.then(() => {
-								if (id === ids.length - 1) resolve(res);
+								if (id === ids.length - 1) resolve(result);
 								else f(id + 1);
 							})
 							.catch(reject);
 					})(0);
 				})
-					.then(res.send)
+					.then((arr) => { res.send(arr); })
 					.catch(e => {
 						console.error(e);
 						res.status(500).send(e);
 					});
 			})
-			.then(res.send)
 			.catch(e => {
 				console.error(e);
 				res.status(500).send(e);

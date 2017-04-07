@@ -108,27 +108,39 @@ module.exports = {
 				code: code,
 				codeIsApproved: false,
 				createdAt: new Date()
-			}).then(() => {
-				res.status(200).end();
+			}).then((module) => {
+				if (req.query.hasOwnProperty("doRedirect")) res.redirect(`${req.get('origin')}/modules/${module.id}`);
+				else res.status(200).end()
 			}).catch((e) => {
-				res.status(500).send(e)
+				res.status(500).send(e);
 			});
 		});
 	},
 	update(req, res) {
+		let id;
+		console.log(req.files);
+		Object.keys(req.body).forEach(key => {
+			if (!isNaN(Number(key)) && req.body[key] === 'on') {
+				id = Number(key);
+			}
+		});
+
 		condenseFiles(req.files).then(code => {
 			Modules.update({
+				name: req.body.module_name,
+				description: req.body.module_desc,
 				pendingCode: code,
 				pendingCodeIsApproved: false,
 				updatedAt: new Date()
 			}, {
 				where: {
-					id: req.body.moduleId
+					id: id
 				}
 			}).then(() => {
-				res.status(200).end()
+				if (req.query.hasOwnProperty("doRedirect")) res.redirect(`${req.get('origin')}/modules/${module.id}`);
+				else res.status(200).end();
 			}).catch((e) => {
-				res.status(500).send(e)
+				res.status(500).send(e);
 			});
 		});
 	},
