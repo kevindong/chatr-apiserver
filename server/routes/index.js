@@ -16,6 +16,7 @@ module.exports = (app) => {
 	app.get('/users/banned', usersController.banned);
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
+	app.get('/users/get', usersController.getAll);
 	app.post('/users/enablemodule', userModulesController.enableModule);
 	app.post('/users/disablemodule', userModulesController.disableModule);
 	app.post('/users/delete', usersController.delete);
