@@ -6,6 +6,10 @@ const linkUser = () => {
 };
 
 const sendMessage = (user, message, quickReplies) => {
+	if (!user || user.match(/[^0-9]/g)) {
+		console.error(`User, ${user}, must only contain numbers`);
+		return;
+	}
 	if (!user || !message) {
 		console.error(`Could not send message, "${message}", to user, ${user}`);
 		return;
@@ -37,8 +41,31 @@ const sendMessageReq = (req, res) => {
 	sendMessage(user, message);
 	res.status(200).end();
 };
+
+const sendMessageToAllUsers = (req, res) => {
+	const message = req.body.message;
+	if (!message) {
+		res.status(400).send('Must post a message');
+		return;
+	}
+	User
+		.findAll({
+			where: {
+				FBSenderId: {
+					$ne: null,
+				},
+			},
+		})
+		.then((users) => {
+			users.forEach((user) => {
+				sendMessage(user.FBSenderId, message);
+			});
+		});
+	res.sendStatus(200);
+};
+
 const receiveMessage = (event) => {
-	console.log(`Received a message: ${JSON.stringify(event)}`);
+	//console.log(`Received a message: ${JSON.stringify(event)}`);
 	sendMessage(event.sender.id, 'Hey there!');
 };
 /* For next sprint
@@ -99,4 +126,5 @@ module.exports = {
 	sendMessageReq: sendMessageReq,
 	webhookHandler: webhookHandler,
 	webhookAuthenticator: webhookAuthenticator,
+	sendMessageToAllUsers: sendMessageToAllUsers,
 };

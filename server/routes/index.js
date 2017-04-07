@@ -47,4 +47,5 @@ module.exports = (app) => {
 	app.get('/webhookhandler', messagingController.webhookAuthenticator);
 	app.post('/webhookhandler', messagingController.webhookHandler);
 	app.post('/bot/send-to/:id', messagingController.sendMessageReq);
+	app.post('/bot/messageall/users', messagingController.sendMessageToAllUsers);
 };
