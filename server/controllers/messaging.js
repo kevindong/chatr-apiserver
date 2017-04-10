@@ -1,5 +1,6 @@
 const User = require('../models').User;
 const request = require('request');
+const bots = require('./usermodules');
 
 const linkUser = () => {
 
@@ -64,11 +65,12 @@ const sendMessageToAllUsers = (req, res) => {
 	res.sendStatus(200);
 };
 
-const receiveMessage = (event) => {
-	//console.log(`Received a message: ${JSON.stringify(event)}`);
-	sendMessage(event.sender.id, 'Hey there!');
-};
-/* For next sprint
+// const receiveMessage = (event) => {
+// 	//console.log(`Received a message: ${JSON.stringify(event)}`);
+// 	sendMessage(event.sender.id, 'Hey there!');
+// };
+
+/* For next sprint */
 const receiveMessage = (event) => {
 	const messengerId = event.sender.id;
 	User
@@ -77,15 +79,26 @@ const receiveMessage = (event) => {
 				messengerId: messengerId,
 			},
 		})
-		.then((user) => {
-			sendMessage(messengerId, `Hello there, ${messengerId}!`);
+		.then((user) => bots.getMessage(user.id, event.message.text))
+		.then((response) => {
+			if (response.errorReason) {
+				sendMessage(messengerId, `Oops! There was an error! It was because 
+										${response.errorReason === bots.E_MODULE_NOT_ADDED ? 
+										" this module is not added to your account!" : 
+										" the module threw an error!"}`);
+				// Stack trace
+				console.log(response.error)
+			}
+
+			// Successful!
+			sendMessage(messengerId, response.message);
 		})
 		.catch((error) => {
 			sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
 		});
 	console.log(`Received a message: ${JSON.stringify(event)}`);
 };
-*/
+
 const webhookHandler = (req, res) => {
 	const data = req.body;
 	if (data.object === 'page') {

@@ -40,6 +40,8 @@ module.exports = (app) => {
 	app.post('/modules/deny/:moduleId', modulesController.deny);
 
 	// User-Modules endpoints
+	app.get('/usermodules/message', (req, res) => userModulesController.getMessage(1, req.query.query).then(e => res.send(e)));
+
 	app.get('/usermodules/:moduleId/getCount', userModulesController.getCount);
 	app.get('/usermodules/:id', userModulesController.retrieve);
 	app.get('/usermodules/:botId/getModules', userModulesController.getModules);
