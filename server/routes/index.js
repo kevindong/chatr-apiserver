@@ -17,8 +17,6 @@ module.exports = (app) => {
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
 	app.get('/users/get', usersController.getAll);
-	app.post('/users/enablemodule', userModulesController.enableModule);
-	app.post('/users/disablemodule', userModulesController.disableModule);
 	app.post('/users/delete', usersController.delete);
 
 	// Proof that the three controllers work
@@ -41,10 +39,11 @@ module.exports = (app) => {
 
 	// User-Modules endpoints
 	app.get('/usermodules/message', (req, res) => userModulesController.getMessage(1, req.query.query).then(e => res.send(e)).catch(e => res.send(e)));
-
 	app.get('/usermodules/:moduleId/getCount', userModulesController.getCount);
 	app.get('/usermodules/:id', userModulesController.retrieve);
 	app.get('/usermodules/:botId/getModules', userModulesController.getModules);
+	app.post('/usermodules/enable', userModulesController.enableModule);
+	app.post('/usermodules/disable', userModulesController.disableModule);
 
 	// Messaging endpoints
 	app.get('/webhookhandler', messagingController.webhookAuthenticator);

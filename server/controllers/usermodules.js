@@ -80,7 +80,8 @@ module.exports = {
 	getModules(req, res) {
 		UserModules.findAll({
 			where: {
-				id: req.params.botId
+				userId: req.params.botId,
+				active: true
 			}
 		})
 			.then(modules => {
