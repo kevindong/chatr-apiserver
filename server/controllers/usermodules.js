@@ -1,5 +1,7 @@
 "use strict";
-const {UserModules, Modules, Users} = require('../models');
+const UserModules = require('../models').UserModule;
+const Modules = require('../models').Module;
+const Users = require('../models').User;
 
 module.exports = {
 	testGet(req, res) {
@@ -126,72 +128,71 @@ module.exports = {
 	 * of those happens, message will have the message.
 	 */
 	getMessage(userId, query) {
-		return new Promise(function (resolve, reject) {
-			const E_MODULE_NOT_ADDED = 1;
-			const E_MODULE_PRODUCED_ERROR = 2;
-			const E_NO_CONTEXT = 3;
-			const response = {
-				message: "",
-				errorReason: 0,
-				error: null
-			};
+		let usersModules = [];
+		let mName = '';
+		const E_MODULE_NOT_ADDED = 1;
+		const E_MODULE_PRODUCED_ERROR = 2;
+		const E_NO_CONTEXT = 3;
+		const response = {
+			message: "",
+			errorReason: 0,
+			error: null
+		};
 
-			new Promise(function (resolve, reject) {
-				if (query[0] === "@") {
-					const mName = query.split(" ")[0].substr(1);
-					Users.update({
-						context: mName,
-						where: {
-							id: userId
-						}
-					}).then(() => resolve(mName)).catch(e => reject(e));
-				} else {
-					Users.findById(userId).then(user => {
-						const context = user.dataValues.context;
-
-						if (context === "" || context === null) {
-							response.errorReason = E_NO_CONTEXT;
-							resolve(response);
-						}
-
-						resolve(user.dataValues.context);
-					}).catch(e => reject(e));
-				}
-			}).then((moduleName) => {
-				// There was an error
-				if (moduleName.hasOwnProperty("errorReason")) resolve(moduleName);
-
-				let usersModules = [];
-
-				UserModules.findAll({
+		return new Promise(function getModuleName(resolve, reject) {
+			if (query[0] === "@") {
+				const mName = query.split(" ")[0].substr(1);
+				Users.update({
+					context: mName
+				}, {
 					where: {
-						userId: userId
+						id: userId
 					}
-				}).then(modules => {
-					usersModules = modules.map(e => e.dataValues);
-				}).then(
-					Modules.findAll({
-						where: {
-							name: moduleName
-						}
-					}).then(modules => {
-						if (modules.length === 0) {
-							response.errorReason = E_MODULE_NOT_ADDED;
-							resolve(response);
-						}
+				}).then((numRows, affectedRows) => resolve(mName)).catch(e => reject(e));
+			} else {
+				Users.findById(userId).then(user => {
+					const context = user.dataValues.context;
 
-						try {
-							response.message = eval('(function(message, userId){' + modules[0].dataValues.code +
-								'})("' + query.replace("\"", "\\\"") + '", ' + userId + ')');
-							resolve(response);
-						} catch (e) {
-							response.errorReason = E_MODULE_PRODUCED_ERROR;
-							response.error = e;
-							resolve(response);
-						}
-					}).catch(e => reject(e))
-				).catch(e => reject(e));
-			}).then(response => resolve(response)).catch((e) => reject(e));
-		});
-	},
+					if (context === "" || context === null) {
+						response.errorReason = E_NO_CONTEXT;
+						return reject(response);
+					}
+
+					resolve(user.dataValues.context);
+				}).catch(e => reject(e));
+			}
+		}).then((moduleName) => new Promise(function (resolve, reject) {
+			// There was an error
+			if (moduleName.hasOwnProperty("errorReason")) return reject(moduleName);
+
+			mName = moduleName;
+
+			resolve(UserModules.findAll({
+				where: {
+					userId: userId
+				}
+			}));
+		})).then(modules => new Promise(function (resolve, reject) {
+			usersModules = modules.map(e => e.dataValues);
+			resolve(usersModules);
+		})).then(um => Modules.findOne({where: {name: mName}}))
+			.then(module => new Promise(function (resolve, reject) {
+				module = module.dataValues;
+
+				if (usersModules.filter(e => e.moduleId === module.id).length === 0) {
+					response.errorReason = E_MODULE_NOT_ADDED;
+					return reject(response);
+				}
+
+				try {
+					response.message = eval(`(function(message, userId){${module.code}
+							})("${query.replace("\"", "\\\"")}", ${userId})`);
+					resolve(response);
+				} catch (e) {
+					response.errorReason = E_MODULE_PRODUCED_ERROR;
+					response.error = e;
+					return reject(response);
+				}
+			}));
+	}
 };

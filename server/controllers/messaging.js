@@ -1,3 +1,4 @@
+"use strict";
 const User = require('../models').User;
 const request = require('request');
 const bots = require('./usermodules');
@@ -81,20 +82,32 @@ const receiveMessage = (event) => {
 		})
 		.then((user) => bots.getMessage(user.id, event.message.text))
 		.then((response) => {
-			if (response.errorReason) {
-				sendMessage(messengerId, `Oops! There was an error! It was because 
-										${response.errorReason === bots.E_MODULE_NOT_ADDED ? 
-										" this module is not added to your account!" : 
-										" the module threw an error!"}`);
-				// Stack trace
-				console.log(response.error)
-			}
-
 			// Successful!
 			sendMessage(messengerId, response.message);
 		})
 		.catch((error) => {
-			sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
+			// TODO Not sure how to differentiate these...
+			// sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
+
+			let reason = "";
+			switch(response.errorReason) {
+				case bots.E_NO_CONTEXT:
+					reason = "you did not @mention a module";
+					break;
+				case bots.E_MODULE_NOT_ADDED:
+					reason = "this module is not added to your account";
+					break;
+				case bots.E_MODULE_PRODUCED_ERROR:
+					reason = "the module threw an error";
+					break;
+				default:
+					reason = "the universe hates you. Try again after the singularity"
+			}
+
+			sendMessage(messengerId, `Oops! There was an error! It was because ${reason}!`);
+
+			// Stack trace
+			console.log(error.error);
 		});
 	console.log(`Received a message: ${JSON.stringify(event)}`);
 };
