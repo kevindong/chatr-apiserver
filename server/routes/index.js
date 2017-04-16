@@ -13,9 +13,11 @@ module.exports = (app) => {
 			}
 		);
 	});
+	app.post('/users/makeadmin/:userId', usersController.makeAdmin);
+	app.post('/users/revokeadmin/:userId', usersController.revokeAdmin);
 	app.get('/users/banned', usersController.banned);
-	app.post('/users/ban/:moduleId', usersController.ban);
-	app.post('/users/unban/:moduleId', usersController.unBan);
+	app.post('/users/ban/:userId', usersController.ban);
+	app.post('/users/unban/:userId', usersController.unBan);
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
 	app.get('/users/get/:userEmail/email', usersController.getByEmail);

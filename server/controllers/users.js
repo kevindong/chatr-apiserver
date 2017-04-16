@@ -134,4 +134,34 @@ module.exports = {
 			res.status(400).send('Error unbanning user');
 		});
 	},
+	makeAdmin(req, res) {
+		User
+			.update({
+				isAdmin: true
+			}, {
+				where: {
+					id: req.params.userId
+				}
+			}).then((user) => {
+			res.status(200).send('User is an admin');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error making user an admin');
+		});
+	},
+	revokeAdmin(req, res) {
+		User
+			.update({
+				isAdmin: false
+			}, {
+				where: {
+					id: req.params.userId
+				}
+			}).then((user) => {
+			res.status(200).send('User is no longer an admin');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error revoking admin status');
+		});
+	},
 };
