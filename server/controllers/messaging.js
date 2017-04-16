@@ -66,16 +66,10 @@ const sendMessageToAllUsers = (req, res) => {
 	res.sendStatus(200);
 };
 
-// const receiveMessage = (event) => {
-// 	//console.log(`Received a message: ${JSON.stringify(event)}`);
-// 	sendMessage(event.sender.id, 'Hey there!');
-// };
-
-/* For next sprint */
 const receiveMessage = (event) => {
 	const messengerId = event.sender.id;
 	User
-		.find({
+		.findOne({
 			where: {
 				messengerId: messengerId,
 			},
@@ -90,7 +84,7 @@ const receiveMessage = (event) => {
 			// sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
 
 			let reason = "";
-			switch(response.errorReason) {
+			switch(error.errorReason) {
 				case bots.E_NO_CONTEXT:
 					reason = "you did not @mention a module";
 					break;
