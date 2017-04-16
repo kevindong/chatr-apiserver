@@ -74,6 +74,10 @@ const receiveMessage = (event) => {
 				messengerId: messengerId,
 			},
 		})
+		.catch((error) => {
+			console.log(`Error: Could not find user with messengerId: ${messengerId}`);
+			sendMessage(messengerId, 'Looks like we couldn\'t find you as a user!');
+		})
 		.then((user) => bots.getMessage(user.id, event.message.text))
 		.then((response) => {
 			// Successful!
