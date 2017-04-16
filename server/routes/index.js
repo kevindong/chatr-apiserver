@@ -33,6 +33,8 @@ module.exports = (app) => {
 	app.post('/modules/delete/:moduleId', modulesController.delete);
 	app.post('/modules/update', multer.array('code'), modulesController.update);
 	app.get('/modules/banned', modulesController.banned);
+	app.post('/modules/ban/:moduleId', modulesController.ban);
+	app.post('/modules/unban/:moduleId', modulesController.unBan);
 	app.get('/modules/pending', modulesController.pending);
 	app.post('/modules/approve/:moduleId', modulesController.approve);
 	app.post('/modules/deny/:moduleId', modulesController.deny);
