@@ -14,6 +14,8 @@ module.exports = (app) => {
 		);
 	});
 	app.get('/users/banned', usersController.banned);
+	app.post('/users/ban/:moduleId', usersController.ban);
+	app.post('/users/unban/:moduleId', usersController.unBan);
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
 	app.get('/users/get', usersController.getAll);

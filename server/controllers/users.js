@@ -46,12 +46,12 @@ module.exports = {
 				}
 			})
 			.then((value) => {
-					if (value !== 0) {
-						return res.status(200).send('User deleted.');
-					} else {
-						return res.status(404).send('User email not found in database.');
-					}
+				if (value !== 0) {
+					return res.status(200).send('User deleted.');
+				} else {
+					return res.status(404).send('User email not found in database.');
 				}
+			}
 			)
 			.catch((error) => {
 				return res.status(400).send(error);
@@ -64,7 +64,7 @@ module.exports = {
 				return res.status(200).send(users.map(e => e.dataValues));
 			}).catch((error) => {
 				console.log(error);
-				return res.status(400).send('Error finding pending modules');
+				return res.status(400).send('Error finding users');
 			})
 	},
 	banned(req, res) {
@@ -84,5 +84,35 @@ module.exports = {
 				console.log(error);
 				res.status(400).send('Error finding banned users');
 			})
+	},
+	ban(req, res) {
+		User
+			.update({
+				isBanned: true
+			}, {
+				where: {
+					id: req.params.userId
+				}
+			}).then((user) => {
+			res.status(200).send('User banned');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error banning user');
+		});
+	},
+	unBan(req, res) {
+		User
+			.update({
+				isBanned: false
+			}, {
+				where: {
+					id: req.params.userId
+				}
+			}).then((user) => {
+			res.status(200).send('User unbanned');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error unbanning user');
+		});
 	},
 };
