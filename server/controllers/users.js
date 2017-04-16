@@ -35,6 +35,25 @@ module.exports = {
 				res.status(400).send(error);
 			});
 	},
+	getByEmail(req, res) {
+		return User
+			.find({
+				where: {
+					email: req.params.userEmail
+				}
+			})
+			.then((user) => {
+				if (!user) {
+					return res.status(404).send({
+						message: 'User Not Found',
+					});
+				}
+				return res.status(200).send(user);
+			})
+			.catch((error) => {
+				res.status(400).send(error);
+			});
+	},
 	delete(req, res) {
 		if (req.body.email === undefined) {
 			return res.status(400).send('You must specify a user to delete using their email.');

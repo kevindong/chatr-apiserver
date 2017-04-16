@@ -18,6 +18,7 @@ module.exports = (app) => {
 	app.post('/users/unban/:moduleId', usersController.unBan);
 	app.post('/users/create', usersController.create);
 	app.get('/users/get/:userId', usersController.retrieve);
+	app.get('/users/get/:userEmail/email', usersController.getByEmail);
 	app.get('/users/get', usersController.getAll);
 	app.post('/users/delete', usersController.delete);
 
