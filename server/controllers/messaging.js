@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const User = require('../models').User;
 const request = require('request');
 const bots = require('./usermodules');
@@ -71,7 +71,7 @@ const receiveMessage = (event) => {
 	User
 		.findOne({
 			where: {
-				messengerId: messengerId,
+				FBSenderId: messengerId,
 			},
 		})
 		.catch((error) => {
@@ -84,22 +84,21 @@ const receiveMessage = (event) => {
 			sendMessage(messengerId, response.message);
 		})
 		.catch((error) => {
-			// TODO Not sure how to differentiate these...
 			// sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
 
-			let reason = "";
-			switch(error.errorReason) {
-				case bots.E_NO_CONTEXT:
-					reason = "you did not @mention a module";
-					break;
-				case bots.E_MODULE_NOT_ADDED:
-					reason = "this module is not added to your account";
-					break;
-				case bots.E_MODULE_PRODUCED_ERROR:
-					reason = "the module threw an error";
-					break;
-				default:
-					reason = "the universe hates you. Try again after the singularity"
+			let reason = '';
+			switch (error.errorReason) {
+			case bots.E_NO_CONTEXT:
+				reason = 'you did not @mention a module';
+				break;
+			case bots.E_MODULE_NOT_ADDED:
+				reason = 'this module is not added to your account';
+				break;
+			case bots.E_MODULE_PRODUCED_ERROR:
+				reason = 'the module threw an error';
+				break;
+			default:
+				reason = 'the universe hates you. Try again after the singularity';
 			}
 
 			sendMessage(messengerId, `Oops! There was an error! It was because ${reason}!`);
