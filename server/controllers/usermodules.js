@@ -194,6 +194,12 @@ module.exports = {
 					eval(`(function(message, userId){${module.code}
 							})("${query.replace("\"", "\\\"")}", ${userId})`)
 						.then((res) => {
+							if (!res) {
+								response.errorReason = E_MODULE_PRODUCED_ERROR;
+								response.error = 'No message returned';
+								reject(response);
+								return;
+							}
 							response.message = res;
 							resolve(response);
 						});
