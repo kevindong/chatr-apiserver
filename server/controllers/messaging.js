@@ -74,11 +74,31 @@ const receiveMessage = (event) => {
 				FBSenderId: messengerId,
 			},
 		})
-		.catch((error) => {
-			console.log(`Error: Could not find user with messengerId: ${messengerId}`);
-			sendMessage(messengerId, 'Looks like we couldn\'t find you as a user!');
+		.then((user) => {
+			if (user === null) { // This branch is invoked when the user is not in the database
+				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+				if (re.test(event.message.text)) {
+					User.create({
+						FBSenderId: messengerId,
+						email: event.message.text,
+						isAdmin: false,
+						isBanned: false
+					})
+					.then((newUser) => {
+						console.log('Successfully created user!');
+					})
+					.catch((error) => {
+						console.log(error);
+						throw('User creation failed. See the above stack trace for details.');
+					});
+					return({message: 'Whew, wasn\'t that hard? You\'re now all set up for Chatr! Please go to the Chatr website to set up your account now.'});
+				} else {
+					return({message: 'Well hello there! You look new. Please send me your email to get started with Chatr.'});
+				}
+			} else {
+				return(bots.getMessage(user.id, event.message.text));
+			}
 		})
-		.then((user) => bots.getMessage(user.id, event.message.text))
 		.then((response) => {
 			// Successful!
 			sendMessage(messengerId, response.message);
