@@ -13,9 +13,13 @@ module.exports = (app) => {
 			}
 		);
 	});
+	app.post('/users/makeadmin/:userId', usersController.makeAdmin);
+	app.post('/users/revokeadmin/:userId', usersController.revokeAdmin);
 	app.get('/users/banned', usersController.banned);
-	app.post('/users/create', usersController.create);
+	app.post('/users/ban/:userId', usersController.ban);
+	app.post('/users/unban/:userId', usersController.unBan);
 	app.get('/users/get/:userId', usersController.retrieve);
+	app.get('/users/get/:userEmail/email', usersController.getByEmail);
 	app.get('/users/get', usersController.getAll);
 	app.post('/users/delete', usersController.delete);
 
@@ -33,6 +37,8 @@ module.exports = (app) => {
 	app.post('/modules/delete/:moduleId', modulesController.delete);
 	app.post('/modules/update', multer.array('code'), modulesController.update);
 	app.get('/modules/banned', modulesController.banned);
+	app.post('/modules/ban/:moduleId', modulesController.ban);
+	app.post('/modules/unban/:moduleId', modulesController.unBan);
 	app.get('/modules/pending', modulesController.pending);
 	app.post('/modules/approve/:moduleId', modulesController.approve);
 	app.post('/modules/deny/:moduleId', modulesController.deny);

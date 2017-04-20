@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 const User = require('../models').User;
 const request = require('request');
 const bots = require('./usermodules');
@@ -66,42 +66,59 @@ const sendMessageToAllUsers = (req, res) => {
 	res.sendStatus(200);
 };
 
-// const receiveMessage = (event) => {
-// 	//console.log(`Received a message: ${JSON.stringify(event)}`);
-// 	sendMessage(event.sender.id, 'Hey there!');
-// };
-
-/* For next sprint */
 const receiveMessage = (event) => {
 	const messengerId = event.sender.id;
 	User
-		.find({
+		.findOne({
 			where: {
-				messengerId: messengerId,
+				FBSenderId: messengerId,
 			},
 		})
-		.then((user) => bots.getMessage(user.id, event.message.text))
+		.then((user) => {
+			if (user === null) { // This branch is invoked when the user is not in the database
+				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+				if (re.test(event.message.text)) {
+					User.create({
+						FBSenderId: messengerId,
+						email: event.message.text,
+						isAdmin: false,
+						isBanned: false
+					})
+					.then((newUser) => {
+						console.log('Successfully created user!');
+					})
+					.catch((error) => {
+						console.log(error);
+						throw('User creation failed. See the above stack trace for details.');
+					});
+					return({message: 'Whew, wasn\'t that hard? You\'re now all set up for Chatr! Please go to the Chatr website to set up your account now.'});
+				} else {
+					return({message: 'Well hello there! You look new. Please send me your email to get started with Chatr.'});
+				}
+			} else {
+				return(bots.getMessage(user.id, event.message.text));
+			}
+		})
 		.then((response) => {
 			// Successful!
 			sendMessage(messengerId, response.message);
 		})
 		.catch((error) => {
-			// TODO Not sure how to differentiate these...
 			// sendMessage(messengerId, `Could not find a user with messenger id ${messengerId}`);
 
-			let reason = "";
-			switch(response.errorReason) {
-				case bots.E_NO_CONTEXT:
-					reason = "you did not @mention a module";
-					break;
-				case bots.E_MODULE_NOT_ADDED:
-					reason = "this module is not added to your account";
-					break;
-				case bots.E_MODULE_PRODUCED_ERROR:
-					reason = "the module threw an error";
-					break;
-				default:
-					reason = "the universe hates you. Try again after the singularity"
+			let reason = '';
+			switch (error.errorReason) {
+			case bots.E_NO_CONTEXT:
+				reason = 'you did not @mention a module';
+				break;
+			case bots.E_MODULE_NOT_ADDED:
+				reason = 'this module is not added to your account';
+				break;
+			case bots.E_MODULE_PRODUCED_ERROR:
+				reason = 'the module threw an error';
+				break;
+			default:
+				reason = 'the universe hates you. Try again after the singularity';
 			}
 
 			sendMessage(messengerId, `Oops! There was an error! It was because ${reason}!`);

@@ -186,9 +186,23 @@ module.exports = {
 				}
 
 				try {
+					/* Before
 					response.message = eval(`(function(message, userId){${module.code}
 							})("${query.replace("\"", "\\\"")}", ${userId})`);
 					resolve(response);
+					*/
+					eval(`(function(message, userId){${module.code}
+							})("${query.replace("\"", "\\\"")}", ${userId})`)
+						.then((res) => {
+							if (!res) {
+								response.errorReason = E_MODULE_PRODUCED_ERROR;
+								response.error = 'No message returned';
+								reject(response);
+								return;
+							}
+							response.message = res;
+							resolve(response);
+						});
 				} catch (e) {
 					response.errorReason = E_MODULE_PRODUCED_ERROR;
 					response.error = e;

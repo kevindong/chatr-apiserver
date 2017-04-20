@@ -217,4 +217,34 @@ module.exports = {
 				res.status(400).send('Error finding banned modules');
 			})
 	},
+	ban(req, res) {
+		Modules
+			.update({
+				isBanned: true
+			}, {
+				where: {
+					id: req.params.moduleId
+				}
+			}).then((module) => {
+			res.status(200).send('Module banned');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error banning module');
+		});
+	},
+	unBan(req, res) {
+		Modules
+			.update({
+				isBanned: false
+			}, {
+				where: {
+					id: req.params.moduleId
+				}
+			}).then((module) => {
+			res.status(200).send('Module unbanned');
+		}).catch((error) => {
+			console.log(error);
+			res.status(400).send('Error unbanning module');
+		});
+	},
 };
