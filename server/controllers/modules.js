@@ -167,7 +167,7 @@ module.exports = {
 		let query = req.query.q;
 
 		let searchIn = Object.keys(req.query).filter(k => {
-			return k !== 'q' && req.query[k];
+			return k !== 'q' && req.query[k] === 'true';
 		});
 
 		let or = [];
