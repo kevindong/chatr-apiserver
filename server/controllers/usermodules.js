@@ -68,8 +68,9 @@ module.exports = {
 	getCount(req, res) {
 		UserModules.findAndCountAll({
 			where: {
-				moduleId: req.params.moduleId
-			}
+				moduleId: req.params.moduleId,
+				active: true,
+			},
 		})
 			.then(r => res.send(r.count.toString()))
 			.catch(e => {
