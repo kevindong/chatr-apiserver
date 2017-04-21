@@ -31,10 +31,10 @@ module.exports = (sequelize, DataTypes) => {
 		classMethods: {
 			associate: (models) => {
 				User.hasMany(models.Module, {
-					foreignKey: 'id',
-				}),
+					foreignKey: 'userId',
+				});
 				User.hasMany(models.UserModule, {
-					foreignKey: 'id',
+					foreignKey: 'userId',
 				});
 			},
 		},
