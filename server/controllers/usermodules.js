@@ -187,13 +187,13 @@ module.exports = {
 				}
 
 				try {
-					/* Before
-					response.message = eval(`(function(message, userId){${module.code}
-							})("${query.replace("\"", "\\\"")}", ${userId})`);
-					resolve(response);
-					*/
+					let cleanedQuery = query;
+					if (cleanedQuery[0] === '@') {
+						//Removes '@giphy' in '@giphy [query]'
+						cleanedQuery = cleanedQuery.split(' ').slice(1).join(' ');
+					}
 					eval(`(function(message, userId){${module.code}
-							})("${query.replace("\"", "\\\"")}", ${userId})`)
+							})("${cleanedQuery.replace("\"", "\\\"")}", ${userId})`)
 						.then((res) => {
 							if (!res) {
 								response.errorReason = E_MODULE_PRODUCED_ERROR;
