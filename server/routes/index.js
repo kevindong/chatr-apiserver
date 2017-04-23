@@ -34,7 +34,7 @@ module.exports = (app) => {
 	app.get('/modules/getByUser/:userId', modulesController.getModulesForUser);
 	app.get('/modules/get', modulesController.getModules);
 	app.get('/modules/search', modulesController.search);
-	app.post('/modules/delete/:moduleId', modulesController.delete);
+	app.get('/modules/delete/:moduleId', modulesController.delete);
 	app.post('/modules/update', multer.array('code'), modulesController.update);
 	app.get('/modules/banned', modulesController.banned);
 	app.post('/modules/ban/:moduleId', modulesController.ban);
