@@ -5,12 +5,13 @@ const webpack = require('webpack')(config);
 const fs = require('fs');
 const os = require('os');
 const npmi = require('npmi');
+const request = require('request');
 
 function condenseFiles(files) {
 	return new Promise((resolve, reject) => {
 		if (files.length > 1) {
 			files.forEach(f => fs.writeFileSync(os.tmpdir() + '/' + f.originalname, f.buffer));
-			npmi({path: os.tmpdir()}, (err, data) => {
+			npmi({ path: os.tmpdir() }, (err, data) => {
 				if (err) {
 					console.error(err);
 					reject(err);
@@ -71,18 +72,32 @@ module.exports = {
 	},
 	approve(req, res) {
 		Modules
-			.update({
-				pendingCodeIsApproved: true
-			}, {
-				where: {
-					id: req.params.moduleId
+			.findById(req.params.moduleId)
+			.then((module) => {
+				if (!module) {
+					return res.status(404).send({
+						message: 'Module Not Found',
+					});
 				}
-			}).then((module) => {
-			res.status(200).send('Module approved');
-		}).catch((error) => {
-			console.log(error);
-			res.status(400).send('Error approving module');
-		});
+				Modules
+					.update({
+						code: module['pendingCode'],
+						pendingCode: null,
+						pendingCodeIsApproved: null,
+					}, {
+						where: {
+							id: req.params.moduleId
+						}
+					}).then((module) => {
+						res.status(200).send('Module approved');
+					}).catch((error) => {
+						console.log(error);
+						res.status(400).send('Error approving module');
+					});
+			}).catch((error) => {
+				console.log(error);
+				res.status(400).send('Error looking up module');
+			});
 	},
 	deny(req, res) {
 		Modules
@@ -93,11 +108,11 @@ module.exports = {
 					id: req.params.moduleId
 				}
 			}).then((module) => {
-			res.status(200).send('Module denied');
-		}).catch((error) => {
-			console.log(error);
-			res.status(400).send('Error denying module');
-		});
+				res.status(200).send('Module denied');
+			}).catch((error) => {
+				console.log(error);
+				res.status(400).send('Error denying module');
+			});
 	},
 	uploadModule(req, res) {
 		condenseFiles(req.files).then(code => {
@@ -133,15 +148,15 @@ module.exports = {
 				pendingCodeIsApproved: false,
 				updatedAt: new Date()
 			}, {
-				where: {
-					id: id
-				}
-			}).then(() => {
-				if (req.query.hasOwnProperty("doRedirect")) res.redirect(`${req.get('origin')}/modules/${module.id}`);
-				else res.status(200).end();
-			}).catch((e) => {
-				res.status(500).send(e);
-			});
+					where: {
+						id: id
+					}
+				}).then(() => {
+					if (req.query.hasOwnProperty("doRedirect")) res.redirect(`${req.get('origin')}/modules/${module.id}`);
+					else res.status(200).end();
+				}).catch((e) => {
+					res.status(500).send(e);
+				});
 		});
 	},
 	getModules(req, res) {
@@ -161,7 +176,7 @@ module.exports = {
 			})
 	},
 	getModulesForUser(req, res) {
-		Modules.findAll({where: {userId: req.params.userId}}).then(m => res.send(m));
+		Modules.findAll({ where: { userId: req.params.userId } }).then(m => res.send(m));
 	},
 	search(req, res) {
 		let query = req.query.q;
@@ -173,11 +188,11 @@ module.exports = {
 		let or = [];
 		searchIn.forEach(i => {
 			const item = {};
-			item[i] = {$iLike: '%' + query.toLowerCase() + '%'};
+			item[i] = { $iLike: '%' + query.toLowerCase() + '%' };
 			or.push(item);
 		});
 
-		return Modules.findAll({where: {"$or": or}}).then(modules => res.send(modules));
+		return Modules.findAll({ where: { "$or": or } }).then(modules => res.send(modules));
 	},
 	delete(req, res) {
 		if (req.params.moduleId === undefined) {
@@ -189,12 +204,12 @@ module.exports = {
 					id: req.params.moduleId,
 				}
 			}).then((value) => {
-					if (value !== 0) {
-						return res.status(200).send('Module deleted.');
-					} else {
-						return res.status(404).send('Module not found in database.');
-					}
+				if (value !== 0) {
+					return res.status(200).send('Module deleted.');
+				} else {
+					return res.status(404).send('Module not found in database.');
 				}
+			}
 			).catch((error) => {
 				return res.status(400).send(error);
 			});
@@ -226,11 +241,11 @@ module.exports = {
 					id: req.params.moduleId
 				}
 			}).then((module) => {
-			res.status(200).send('Module banned');
-		}).catch((error) => {
-			console.log(error);
-			res.status(400).send('Error banning module');
-		});
+				res.status(200).send('Module banned');
+			}).catch((error) => {
+				console.log(error);
+				res.status(400).send('Error banning module');
+			});
 	},
 	unBan(req, res) {
 		Modules
@@ -241,10 +256,10 @@ module.exports = {
 					id: req.params.moduleId
 				}
 			}).then((module) => {
-			res.status(200).send('Module unbanned');
-		}).catch((error) => {
-			console.log(error);
-			res.status(400).send('Error unbanning module');
-		});
+				res.status(200).send('Module unbanned');
+			}).catch((error) => {
+				console.log(error);
+				res.status(400).send('Error unbanning module');
+			});
 	},
 };
