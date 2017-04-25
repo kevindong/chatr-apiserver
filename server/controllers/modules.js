@@ -123,7 +123,7 @@ module.exports = {
 				userId: req.body.userId,
 				description: req.body.module_desc,
 				pendingCode: code,
-				pendingCodeIsApproved: false,
+				pendingCodeIsApproved: null,
 				createdAt: new Date()
 			}).then((module) => {
 				if (req.query.hasOwnProperty("doRedirect")) res.redirect('https://chatr-webserver-prod.herokuapp.com/modules');
@@ -147,7 +147,7 @@ module.exports = {
 				name: req.body.module_name,
 				description: req.body.module_desc,
 				pendingCode: code,
-				pendingCodeIsApproved: false,
+				pendingCodeIsApproved: null,
 				updatedAt: new Date()
 			}, {
 					where: {
