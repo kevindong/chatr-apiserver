@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
 				UserModule.belongsTo(models.User, {
 					foreignKey: 'id',
 					onDelete: 'CASCADE',
-				}),
+				});
 				UserModule.belongsTo(models.Module, {
 					foreignKey: 'id',
 					onDelete: 'CASCADE',

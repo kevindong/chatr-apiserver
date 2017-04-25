@@ -1,5 +1,7 @@
 "use strict";
 const Modules = require('../models').Module;
+const Users = require('../models').User;
+const Sequelize = require('sequelize');
 const config = require('../../webpack.config');
 const webpack = require('webpack')(config);
 const fs = require('fs');
@@ -182,17 +184,38 @@ module.exports = {
 		let query = req.query.q;
 
 		let searchIn = Object.keys(req.query).filter(k => {
-			return k !== 'q' && req.query[k];
+			return k !== 'q' && req.query[k] === 'true';
 		});
 
 		let or = [];
+		let options = {
+			attributes: ['name', 'id']
+		};
+
 		searchIn.forEach(i => {
+			if (i === 'email') {
+				options.include = [
+					{
+						model: Users,
+						attributes: [],
+						on: {
+							id: {
+								$col: 'Module.userId'
+							}
+						},
+						required: false
+					}
+				];
+			}
+
 			const item = {};
-			item[i] = { $iLike: '%' + query.toLowerCase() + '%' };
+			item[i === 'email' ? '$User.email$' : i] = {$iLike: `%${query.toLowerCase()}%`};
 			or.push(item);
 		});
 
-		return Modules.findAll({ where: { "$or": or } }).then(modules => res.send(modules));
+		options.where = {"$or": or};
+
+		return Modules.findAll(options).then(modules => res.send(modules));
 	},
 	delete(req, res) {
 		if (req.params.moduleId === undefined) {

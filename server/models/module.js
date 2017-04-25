@@ -43,9 +43,9 @@ module.exports = (sequelize, DataTypes) => {
 				Module.belongsTo(models.User, {
 					foreignKey: 'id',
 					onDelete: 'CASCADE',
-				}),
+				});
 				Module.hasMany(models.UserModule, {
-					foreignKey: 'id',
+					foreignKey: 'moduleId',
 				});
 			},
 		},
