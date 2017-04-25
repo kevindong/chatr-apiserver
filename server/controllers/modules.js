@@ -169,7 +169,9 @@ module.exports = {
 						$ne: null
 					},
 					active: true,
-					pendingCodeIsApproved: true
+					pendingCodeIsApproved: {
+						$ne: false
+					}
 				}
 			}).then((modules) => {
 				return res.status(200).send(modules.map(e => e.dataValues));
