@@ -85,7 +85,7 @@ module.exports = {
 					.update({
 						code: module['pendingCode'],
 						pendingCode: null,
-						pendingCodeIsApproved: null,
+						pendingCodeIsApproved: true,
 					}, {
 						where: {
 							id: req.params.moduleId
