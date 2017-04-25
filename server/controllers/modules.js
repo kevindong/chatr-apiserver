@@ -166,10 +166,10 @@ module.exports = {
 			.findAll({
 				where: {
 					code: {
-						$ne: null,
-						pendingCodeIsApproved: true
+						$ne: null
 					},
-					active: true
+					active: true,
+					pendingCodeIsApproved: true
 				}
 			}).then((modules) => {
 				return res.status(200).send(modules.map(e => e.dataValues));
