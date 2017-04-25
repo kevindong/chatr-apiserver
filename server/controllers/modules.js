@@ -167,6 +167,7 @@ module.exports = {
 				where: {
 					code: {
 						$ne: null,
+						pendingCodeIsApproved: true
 					},
 					active: true
 				}
