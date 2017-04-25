@@ -122,8 +122,8 @@ module.exports = {
 				name: req.body.module_name,
 				userId: req.body.userId,
 				description: req.body.module_desc,
-				code: code,
-				codeIsApproved: false,
+				pendingCode: code,
+				pendingCodeIsApproved: false,
 				createdAt: new Date()
 			}).then((module) => {
 				if (req.query.hasOwnProperty("doRedirect")) res.redirect('https://chatr-webserver-prod.herokuapp.com/modules');
